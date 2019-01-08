@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy) 低功耗蓝牙搜索、连接的速度更快 低功耗蓝牙功耗要求低">
+<meta name="keywords" content="蓝牙,ble">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ble基础与ble协议栈">
+<meta property="og:url" content="http://yoursite.com/2019/01/03/ble-theory/index.html">
+<meta property="og:site_name" content="photosyn&#39;s blog">
+<meta property="og:description" content="标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy) 低功耗蓝牙搜索、连接的速度更快 低功耗蓝牙功耗要求低">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/ble_stack.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_163421.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_164251.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/BLE基本报文结构.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/广播态数据传输例子.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/连接态数据传输例子.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_221904.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_230420.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/broadcast.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_232713.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_235754.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_000004.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190103_231139.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_101159.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_104518.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/ADV_CONNECT_REQ_1.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/ADV_CONNECT_REQ_2.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_110000.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_110744.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/Connection_Update_Req.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_113858.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/广播态数据传输例子2.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190104_171001.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_164744.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_172154.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_173329.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_173637.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_214825.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190106_220652.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_134420.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_134903.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_135836.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_150506.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_161740.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_163243.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_170627.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_171346.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_171542.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_230137.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_231046.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_232041.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_233007.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_233823.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_233823.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_234644.png">
+<meta property="og:image" content="http://yoursite.com/2019/01/03/ble-theory/sp190107_234855.png">
+<meta property="og:updated_time" content="2019-01-08T06:22:53.992Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ble基础与ble协议栈">
+<meta name="twitter:description" content="标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy) 低功耗蓝牙搜索、连接的速度更快 低功耗蓝牙功耗要求低">
+<meta name="twitter:image" content="http://yoursite.com/2019/01/03/ble-theory/ble_stack.png">
+
+
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/03/ble-theory/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ble基础与ble协议栈 | photosyn's blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">photosyn's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">keep learning</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/03/ble-theory/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="photosyn">
+      <meta itemprop="description" content="学习，生活">
+      <meta itemprop="image" content="/images/7.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="photosyn's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ble基础与ble协议栈
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-01-03 11:15:22" itemprop="dateCreated datePublished" datetime="2019-01-03T11:15:22+08:00">2019-01-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-01-08 14:22:53" itemprop="dateModified" datetime="2019-01-08T14:22:53+08:00">2019-01-08</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="标准蓝牙-Classic-Bluetooth-与低功耗蓝牙-Bluetooth-Low-Energy"><a href="#标准蓝牙-Classic-Bluetooth-与低功耗蓝牙-Bluetooth-Low-Energy" class="headerlink" title="标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy)"></a>标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy)</h3><ul>
+<li>低功耗蓝牙搜索、连接的速度更快</li>
+<li>低功耗蓝牙功耗要求低<a id="more"></a></li>
+<li>低功耗蓝牙传输速度慢，数据量小</li>
+<li>低功耗蓝牙是从蓝牙4.0标准开始</li>
+</ul>
+<h3 id="BLE协议栈介绍"><a href="#BLE协议栈介绍" class="headerlink" title="BLE协议栈介绍"></a>BLE协议栈介绍</h3><p>工作中使用的是CC2540、CC2541，所以以TI BLE协议栈为例：</p>
+<img src="/2019/01/03/ble-theory/ble_stack.png" title="ble协议栈">
+<p>BLE协议采用分层设计，简单描述各层的主要功能：</p>
+<ul>
+<li>PHY：BLE的市场定位是个体和民用，使用的是免费的ISM频段（频率范围是2.400-2.4835 GHz）。BLE将整个频带分为40份，每份的带宽为2MHz，称作RF Channel。物理层定义的就是这部分通信介质以及RF发射相关的特性,包括发射功率（Transmission power）、调制方式（Modulation）等等。</li>
+<li>LL：支持设备间物理无关的逻辑传输通道，包括逻辑通道的定义（广播通道和非广播通道），通道选择用到的调频技术（Hopping），控制设备的射频状态（等待、广播、扫描、发起连接、已连接）和角色（主机、从机），控制数据包发送时机、完整性、ACK接收等。</li>
+<li>HCI：为主机和控制器提供统一的通信接口，这一层可以是软件API或硬件外设UART SPI USB。</li>
+<li>L2CAP：通道的多路复用，上层数据的分割和重组，生成协议数据单元(PDUs)，，满足用户数据传输对延时的要求和对连接间隔的管理。</li>
+<li>SM：定义配对与密钥分配方式，并为协议栈其他层与另一个设备之间的安全连接和数据交换提供服务。</li>
+<li>ATT：ATT层用来定义用户命令及命令操作的数据，比如读取某个数据或者写某个数据。BLE引入了attribute概念，用来描述一条一条的数据。Attribute除了定义数据，同时定义该数据可以使用的ATT命令，因此这一层被称为ATT层。</li>
+<li>GAP：负责处理设备的访问模式和程序。包括定义蓝牙设备角色(Broadcaster Role/Observer Role/Peripheral Role/Central Role)和通信操作模式和过程(Broadcast mode and observation procedure/Discovery modes and procedures/Connection modes and procedures/Bonding modes and procedures)，定义蓝牙地址、蓝牙名称等和蓝牙相关的参数。</li>
+<li>GATT：GATT用来规范attribute中的数据内容，并运用group（分组）的概念对attribute进行分类管理。正是因为有了GATT和各种各样的应用profile，BLE摆脱了ZigBee等无线协议的兼容性困境。</li>
+<li>Application：包括Gap Role/Security Profiles和GATT Profiles，应用层可以包含多个GATT Profiles。</li>
+</ul>
+<h3 id="链路层角色介绍"><a href="#链路层角色介绍" class="headerlink" title="链路层角色介绍"></a>链路层角色介绍</h3><p>BLE设备在LL层定义了两个角色Master和Slave。</p>
+<ul>
+<li>Master是连接的发起方（Initiator），可以决定和连接有关的参数</li>
+<li>Slave是连接的接受方（Advertiser），可以请求（或建议）连接参数，但无法决定。</li>
+</ul>
+<img src="/2019/01/03/ble-theory/sp190103_163421.png" title="LL层角色">
+<h3 id="链路层状态机介绍"><a href="#链路层状态机介绍" class="headerlink" title="链路层状态机介绍"></a>链路层状态机介绍</h3><p>通过上面LL层角色的介绍，引出了LL层的状态机：</p>
+<img src="/2019/01/03/ble-theory/sp190103_164251.png" title="LL层状态机">
+<h4 id="Standby（就绪态）"><a href="#Standby（就绪态）" class="headerlink" title="Standby（就绪态）"></a>Standby（就绪态）</h4><p>Standby状态是初始状态，即不发送数据，也不接收数据。根据上层实体的命令（如位于host软件中GAP），可由其它任何一种状态进入，也可以切换到除Connection状态外的任意一种状态。</p>
+<h4 id="Advertising（广播态）"><a href="#Advertising（广播态）" class="headerlink" title="Advertising（广播态）"></a>Advertising（广播态）</h4><p>Advertising状态是可以通过广播通道发送数据的状态，由Standby状态进入。它广播的数据可以由处于Scanning或者Initiating状态的实体接收。上层实体可通过命令将Advertising状态切换回Standby状态。另外，连接成功后，也可切换为Connection状态。</p>
+<h4 id="Scanning（扫描态）"><a href="#Scanning（扫描态）" class="headerlink" title="Scanning（扫描态）"></a>Scanning（扫描态）</h4><p>Scanning状态是可以通过广播通道接收数据的状态，由Standby状态进入。根据Advertiser所广播的数据的类型，有些Scanner还可以主动向Advertiser请求一些额外数据。上层实体可通过命令将Scanning状态切换回Standby状态。</p>
+<h4 id="Initiating（发起态）"><a href="#Initiating（发起态）" class="headerlink" title="Initiating（发起态）"></a>Initiating（发起态）</h4><p>Initiating状态和Scanning状态类似，不过是一种特殊的接收状态，由Standby状态进入，只能接收Advertiser广播的connectable的数据，并在接收到数据后，发送连接请求，以便和Advertiser建立连接。当连接成功后，Initiater和对应的Advertiser都会切换到Connection状态。</p>
+<h4 id="Connection（连接态）"><a href="#Connection（连接态）" class="headerlink" title="Connection（连接态）"></a>Connection（连接态）</h4><p>Connection状态是和某个实体建立了单独通道的状态，在通道建立之后，由Initiating或者Advertising自动切换而来。通道断开后，会重新回到Standby状态。</p>
+<h3 id="数据传输格式"><a href="#数据传输格式" class="headerlink" title="数据传输格式"></a>数据传输格式</h3><p>LL层的状态切换和角色都了解之后，再看数据如何传输。</p>
+<p>在BLE的LL层，数据传输是和数据的状态相关的，而五个状态在PHY层被分为两种类型的Physical Channel（advertising channel和data channel）。</p>
+<p>Advertising、Scanning、Initiating这三种状态下的通信属于advertising channel。<br>Connection状态下的通信属于data channel。<br>Standby状态不参与通信，因此没有对应的PHY层Channel。</p>
+<p>LL层虽然存在多种状态，但都遵循统的数据传输格式：</p>
+<img src="/2019/01/03/ble-theory/BLE基本报文结构.jpg" title="BLE基本报文结构">
+<ul>
+<li>Preamble：前导是一个8比特的交替序列。他不是01010101就是10101010，取决于接入地址的第一个比特。若接入地址的第一个比特为0：01010101。若接入地址的第一个比特为1：10101010。接收机可以根据前导的无线信号强度来配置自动增益控制。</li>
+<li>Access Address：接入地址有两种类型：广播接入地址和数据接入地址。广播接入地址：固定为0x8E89BED6，在广播、扫描、发起连接时使用。数据接入地址：随机值，不同的连接有不同的值。在连接建立之后的两个设备间使用。<br>对于数据信道，数据接入地址是一个随机值，但需要满足下面几点要求：</li>
+</ul>
+<ol>
+<li>数据接入地址不能超过6个连续的“0”或“1”。</li>
+<li>数据接入地址的值不能与广播接入地址相同。</li>
+<li>数据接入地址的4个字节的值必须互补相同。</li>
+<li>数据接入地址不能有超24次的比特翻转(比特0到1或1到0，称为1次比特翻转)。</li>
+<li>数据接入地址的最后6个比特需要至少两次的比特翻转。</li>
+<li>符合上面条件的有效随机数据接入地址大概有231个。</li>
+</ol>
+<ul>
+<li>PDU（Packet Data Unit）：协议数据单元在BLE的LL层不同状态下的字段定义不同，PDU长度最大为257 octets，我们后面详细描述。</li>
+<li>CRC：BLE采用的是24位CRC校验。CRC对报头、长度和数据进行计算。</li>
+</ul>
+<p>下面从两种Physical Channel（advertising channel和data channel）中，我们各选择一个状态模式下的传输数据的例子，有了大概的概念之后，再学习PDU的详细内容。</p>
+<p>例子参考了这篇文章：：<a href="https://www.cnblogs.com/iini/p/8969828.html" target="_blank" rel="noopener">https://www.cnblogs.com/iini/p/8969828.html</a></p>
+<p>这篇文章由例子出发，描述了packet format的一些设计思路。由于文章比较长，这里精简了一些方便记忆。</p>
+<h4 id="广播态数据传输例子"><a href="#广播态数据传输例子" class="headerlink" title="广播态数据传输例子"></a>广播态数据传输例子</h4><p>以广播态下的通信包为例（小端模式），发送一个电量数据0x53：</p>
+<img src="/2019/01/03/ble-theory/广播态数据传输例子.jpg" title="广播态数据传输例子">
+<ul>
+<li>AA - 前导（为了调制解调电路工作更高效）</li>
+<li>D6BE898E - 接入地址，广播模式下固定为0x8E89BED6。</li>
+<li>60 – LL帧头字段(表示LL数据包类型)</li>
+<li>0E – 有效数据包长度(表示LL帧中实际payload的长度)</li>
+<li>3B75AB2A02E1 – 广播者设备地址(用于确定数据包是谁广播的)</li>
+<li>02010504FF590053 – 广播数据（0x02-长度，0x01-广播类型，0x05-值，0x04-自定义数据类型长度，0xFF-自定义数据类型，0x0059-供应商ID，0x53-电量数据）</li>
+<li>8EC7B2 – CRC24值（数据校验）</li>
+</ul>
+<p>广播数据包的限制：</p>
+<ol>
+<li>无法进行一对一双向通信 （广播是一对多通信，而且是单方向的通信）</li>
+<li>由于不支持组包和拆包，因此无法传输大数据</li>
+<li>通信不可靠及效率低下。广播信道不能太多，否则将导致扫描端效率低下。为此，BLE只使用37(2402MHz) /38(2426MHz) /39(2480MHz)三个信道进行广播和扫描，因此广播不支持跳频。由于广播是一对多的，所以广播也无法支持ACK。这些都使广播通信变得不可靠。</li>
+<li>扫描端功耗高。由于扫描端不知道设备端何时广播，也不知道设备端选用哪个频道进行广播，扫描端只能拉长扫描窗口时间，并同时对37/38/39三个通道进行扫描，这样功耗就会比较高。</li>
+</ol>
+<h4 id="连接态数据传输例子"><a href="#连接态数据传输例子" class="headerlink" title="连接态数据传输例子"></a>连接态数据传输例子</h4><img src="/2019/01/03/ble-theory/连接态数据传输例子.jpg" title="连接态数据传输例子">
+<ul>
+<li>AA – 前导（为了调制解调电路工作更高效）</li>
+<li>50655DAB – 接入地址，连接模式下生成一个独特的随机访问地址</li>
+<li>1E – LL帧头字段(表示LL数据包类型)</li>
+<li>08 – 有效数据包长度(表示LL帧中实际payload的长度)</li>
+<li>04000400 – ATT数据长度（0x0004），以及L2CAP通道编号（0x0004）</li>
+<li>1B – 命令类型（读/写/notify/indicate）</li>
+<li>0013 – 数据类型</li>
+<li>53 – 真正要发送的电量数据</li>
+<li>F650D5 – CRC24值</li>
+</ul>
+<p>连接过程会同步时钟，而且同步后射频收发窗口都可以很短，因此连接后的数据通信效率大大提高。</p>
+<h3 id="advertising-channel对应的PDU"><a href="#advertising-channel对应的PDU" class="headerlink" title="advertising channel对应的PDU"></a>advertising channel对应的PDU</h3><p>通过上面两个例子，可以看出在不同LL层状态下PDU的定义不同。</p>
+<p>先看Advertising、Scanning、Initiating这三种状态，也就是对应的advertising channel的基本PDU格式：</p>
+<img src="/2019/01/03/ble-theory/sp190103_221904.png" title="advertising channel基本PDU结构">
+<ul>
+<li>PDU Type：指示PDU的类型，具体参考后面的介绍。</li>
+<li>RFU：保留。</li>
+<li>TxAdd、RxAdd：由具体的PDU Type决定其意义。</li>
+<li>Length：PDU的长度，6 bits，有效范围是6~37 octets。</li>
+</ul>
+<h3 id="Advertising（广播态）通信"><a href="#Advertising（广播态）通信" class="headerlink" title="Advertising（广播态）通信"></a>Advertising（广播态）通信</h3><img src="/2019/01/03/ble-theory/sp190103_230420.png" title="Advertising相关的PDU">
+<p>Packet Sniffer抓取的ADV_IND类型的PDU广播数据包示例：</p>
+<img src="/2019/01/03/ble-theory/broadcast.jpg" title="广播数据包">
+<h4 id="Advertising-Channel的选择"><a href="#Advertising-Channel的选择" class="headerlink" title="Advertising Channel的选择"></a>Advertising Channel的选择</h4><p>BLE可以使用40个Physical Channel中的3个作为广播通信的物理信道，综合各种因素（抗干扰等），最终选取了如下三个：</p>
+<table>
+<thead>
+<tr>
+<th>RF Channel</th>
+<th>RF Center Frequency</th>
+<th>Advertising Channel Index</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>2402MHz</td>
+<td>37</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2426MHz</td>
+<td>38</td>
+</tr>
+<tr>
+<td>39</td>
+<td>2480MHz</td>
+<td>39</td>
+</tr>
+</tbody>
+</table>
+<p>与此同时，LL层允许Host在这这三个物理信道中，任意选取一个或者多个，用于广播。LL层将相同的广播数据，在每一个被中的Channel中，发送一次。</p>
+<h4 id="Advertising-Event的定义"><a href="#Advertising-Event的定义" class="headerlink" title="Advertising Event的定义"></a>Advertising Event的定义</h4><p>BLE广播的过程中，根据使用场景的不同，会在被使用的每一个物理Channel上，发送（或接收）多种类型的PDU。基于此，BLE协议提出了“Advertising Event”的概念，即：</p>
+<blockquote>
+<p>Advertising Event是在所有被使用的物理Channel上，发送的Advertising PDU的组合。</p>
+</blockquote>
+<p>可以通俗的理解为：<br>BLE设备处于Advertising状态的目的，就是要广播数据。并且，根据应用场景的不同，可广播4种类型的数据。另外，BLE设备最多可以在3个物理Channel上广播数据。也就是说，同一个数据（4中类型中的一种），需要在多个Channel上依次广播。因此，这样依次在多个Channel上广播的过程，就叫做一个Advertising Event。与此同时，有些广播（如可连接、可扫描）发送出去之后，允许接收端在对应的Channel上，回应一些请求（如连接请求、扫描请求）。并且，广播者接收到扫描请求后，需要在同样的Channel上回应。这些过程，也会计算在一个Advertising Event中。</p>
+<h4 id="Advertising-Event-Type"><a href="#Advertising-Event-Type" class="headerlink" title="Advertising Event Type"></a>Advertising Event Type</h4><p>根据应用场景的不同，BLE协议也规定了不同类型的Advertising Event，包括：</p>
+<ul>
+<li>Connectable Undirected Event；</li>
+<li>Connectable Directed Event（包括Low Duty Cycle和High Duty Cycle）；</li>
+<li>Scannable Undirected Event；</li>
+<li>Non-connectable Undirected Event。</li>
+</ul>
+<p>不同的Advertising Event，所对应的Advertising参数（如周期等）不同。</p>
+<h4 id="Advertising周期的设定"><a href="#Advertising周期的设定" class="headerlink" title="Advertising周期的设定"></a>Advertising周期的设定</h4><p>对BLE广播通信来说，Advertising的周期是一个比较重要的参数，因为它关系到系统的功耗和通信的效率，因此需要根据使用场景，小心设定。<br>Advertising周期主要由advInterval、advDelay两个参数决定的，如下图所示：</p>
+<img src="/2019/01/03/ble-theory/sp190103_232713.png" title="Advertising周期">
+<ul>
+<li>advInterval是一个可由Host设定的参数：对于Scannable Undirected和Non-connectable Undirected两种Advertising Event，该值不能小于100ms（从功耗的角度考虑的，也决定了广播数据的速率）；对于Connectable Undirected和Low Duty Cycle Connectable Directed两种Advertising Event，该值不能小于20ms。</li>
+<li>advDelay则是一个0~10ms的伪随机数。</li>
+</ul>
+<p>High Duty Cycle Connectable Directed Event的Advertising周期不受上面的参数控制，可以小到3.75ms。不过呢，BLE协议也同时规定：LL必须在1.28s内退出这种状态。</p>
+<p><strong>注1：我们可以从上面的时间信息推断出，BLE协议对广播通信的期望，是非常明确的—-不在乎速率、只在乎功耗。一般的广播通信（不以连接为目的），最高速率也就是31byte / 100ms = 2.48kbps。如果再算上可扫描的那段数据，也就是double，4.96kbps。</strong></p>
+<p><strong>注2：对于连接来说，如果事先不知道连接发起者的设备地址，则最快的连接速度可能是20ms。如果事先知道地址，使用High Duty Cycle Connectable Directed Event的话，则可能在3.75ms内建立连接。由此可以看出，BLE的连接建立时间，比传统蓝牙少了很多，这也是BLE设备之间不需要保持连接的原因。</strong></p>
+<h3 id="Scanning（扫描态）通信"><a href="#Scanning（扫描态）通信" class="headerlink" title="Scanning（扫描态）通信"></a>Scanning（扫描态）通信</h3><p>下面是扫描态的PDU定义：</p>
+<img src="/2019/01/03/ble-theory/sp190106_235754.png" title="Scanning相关的PDU">
+<p>Packet Sniffer抓取的ADV_SCAN_REQ类型的PDU广播数据包示例：</p>
+<img src="/2019/01/03/ble-theory/sp190107_000004.png" title="ADV_SCAN_REQ数据包">
+<h4 id="scanWindow和scanInterval"><a href="#scanWindow和scanInterval" class="headerlink" title="scanWindow和scanInterval"></a>scanWindow和scanInterval</h4><p>Scanning状态扫描、接收广播数据的状态，该状态的扫描行为是由scanWindow和scanInterval两个参数决定的。scanWindow指示一次扫描的时间（即可以理解为RF RX打开的时间），scanInterval指示两次扫描之间的间隔。如果这两个参数的值相同，表示连续不停地扫描。</p>
+<p>BLE协议规定，scanWindow和scanInterval最大不能超过10.24s，并且scanWindow不能大于scanInterval。</p>
+<h4 id="Passive-Scanning和Active-Scanning"><a href="#Passive-Scanning和Active-Scanning" class="headerlink" title="Passive Scanning和Active Scanning"></a>Passive Scanning和Active Scanning</h4><p>Passive Scanning这种扫描模式下，BLE设备只听不问，也就是说，只接收ADV_DIRECT_IND、ADV_IND、ADV_SCAN_IND、ADV_NONCONN_IND等类型的PDU，并不发送SCAN_REQ。</p>
+<p>而Active Scanning扫描模式，不只认真听讲，还勤于发问（SCAN_REQ），并接收后续的 SCAN_RSP。</p>
+<p>这两种Scanning的最终结果，就是把接收到的数据（包括Advertiser地址、Advertiser数据等），反馈给Host。</p>
+<h3 id="Initialing（发起态）通信"><a href="#Initialing（发起态）通信" class="headerlink" title="Initialing（发起态）通信"></a>Initialing（发起态）通信</h3><p>Initiating状态和Scanning状态类似，只不过它的关注点不一样：它不关心广播数据，只关心ADV_DIRECT_IND和ADV_IND两类消息，并在符合条件的时候，发出CONNECT_REQ，请求建立连接。</p>
+<p>下面是发起态的PDU定义：</p>
+<img src="/2019/01/03/ble-theory/sp190103_231139.png" title="Initialing相关的PDU">
+<h3 id="广播通信模式PDU总结"><a href="#广播通信模式PDU总结" class="headerlink" title="广播通信模式PDU总结"></a>广播通信模式PDU总结</h3><ol>
+<li>如果只需要定时传输一些简单的数据（如某一个温度节点的温度信息），后续不需要建立连接，则可以使用ADV_NONCONN_IND。广播者只需要周期性的广播该类型的PDU即可，接收者按照自己的策略扫描、接收，二者不需要任何额外的数据交互。</li>
+<li>如果除了广播数据之外，还有一些额外的数据需要传输，由于种种原因，如广播数据的长度限制、私密要求等，可以使用ADV_SCAN_IND。广播者在周期性广播的同时，会监听SCAN_REQ请求。接收者在接收到广播数据之后，可以通过SCAN_REQ PDU，请求更多的数据。</li>
+<li>如果后续需要建立点对点的连接，则可使用ADV_IND。广播者在周期性广播的同时，会监听CONNECT_REQ请求。接收者在接收到广播数据之后，可以通过CONNECT_REQ PDU，请求建立连接。</li>
+<li>通过ADV_IND/CONNECT_REQ的组合建立连接，花费的时间比较长。如果双方不关心广播数据，而只是想快速建立连接，恰好如果连接发起者又知道对方（广播者）的蓝牙地址（如通过扫码的方式获取），则可以通过ADV_DIRECT_IND/CONNECT_REQ的方式。</li>
+</ol>
+<h3 id="data-channel对应的PDU"><a href="#data-channel对应的PDU" class="headerlink" title="data channel对应的PDU"></a>data channel对应的PDU</h3><p>现在唯一剩下的状态是Connection，对应的也就是data channel的基本PDU格式：</p>
+<img src="/2019/01/03/ble-theory/sp190104_101159.png" title="data channel的基本PDU结构">
+<ul>
+<li>LLID：Data Channel传输的PDU有两类，一类是数据，称作LL Data PDU，另一类是控制信息，称作LL Control PDU。LLID用于区分PDU的类型，具体可参考后面章节的描述。</li>
+<li>NESN（Next Expected Sequence Number）和SN（Sequence Number）：用于数据传输过程中的应答（Acknowledgement）和流控（Flow Control），具体可参考后面章节的描述。</li>
+<li>MD（More Data）：用于连接的关闭（或者说保持），具体可参考后面章节的描述。</li>
+<li>RFU：预留。</li>
+<li>Length：有效数据的长度（Payload+MIC），只有8-bits，因此LL层所能传输的最大数据是255 bytes（有MIC的话是251bytes），如果L2CAP需要传输更多的数据，需要分包之后传输（这也是L2CAP的主要功能之一）。</li>
+</ul>
+<h4 id="LL-Data-PDU"><a href="#LL-Data-PDU" class="headerlink" title="LL Data PDU"></a>LL Data PDU</h4><p>LL Data PDU有两种：</p>
+<ul>
+<li>Header中的LLID=01b时，Continuation fragment of an L2CAP message, or an Empty PDU。这种类型的PDU，要么是一个未传输完成L2CAP message（长度超过255，被拆包，此时不是第一个），要么是一个空包（Header中的Length为0）。</li>
+<li>Header中的LLID=10b时，Start of an L2CAP message or a complete L2CAP message with no fragmentation。这种类型的PDU，要么是L2CAP message的第一个包，要么是不需要拆包的完整的L2CAP message，无论哪种情况，Header中的Length均不能为0。</li>
+</ul>
+<h4 id="LL-Control-PDU"><a href="#LL-Control-PDU" class="headerlink" title="LL Control PDU"></a>LL Control PDU</h4><p>Header中的LLID=11b时，表示这个数据包是用于控制、管理LL连接的LL control PDU。LL control PDU的payload的格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Opcode(1 octet) + CtrlData(0 ~ 26 octets)</span><br></pre></td></tr></table></figure>
+<p>其中Opcode指示控制&amp;管理packet的类型，包括：</p>
+<ul>
+<li>LL_CONNECTION_UPDATE_REQ：连接参数的更新； </li>
+<li>LL_CHANNEL_MAP_REQ：Channel map的更新； </li>
+<li>LL_TERMINATE_IND：连接即将被关闭的通知（可以通知被关闭的原因）； </li>
+<li>LL_ENC_REQ、LL_ENC_RSP、LL_START_ENC_REQ、LL_START_ENC_RSP：加密有关的请求；等等，具体可参考“BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]”。</li>
+</ul>
+<h3 id="连接的建立"><a href="#连接的建立" class="headerlink" title="连接的建立"></a>连接的建立</h3><p>对BLE来说，连接建立的过程包括：</p>
+<ol>
+<li>处于connectable状态设备（Advertiser），按照一定的周期广播ADV_IND或者ADV_DIRECT_IND包。</li>
+<li>主动连接的设备（Initiator），在收到广播包之后，会回应一个ADV_CONNECT_REQ请求，该请求携带了可决定后续“通信时序”的参数，例如双方在哪一个时间点、哪一个Physical Channel收发数据，等等，后面会详细描述。</li>
+<li>Initiator在发出ADV_CONNECT_REQ数据包之后，自动转变为Connection状态，成为Master角色（注意：这是“自动”的，不需要等待另一方的回应）。同样，Advertiser在收到ADV_CONNECT_REQ请求之后，也自动转变为Connection状态，成为Slave角色。</li>
+<li>此后，双方按照ADV_CONNECT_REQ参数所给出的约定，定时到切换到某一个Physical Channel上，按照Master-&gt;Slave然后Slave-&gt;Master的顺序，收发数据，直至连接断开。</li>
+</ol>
+<p>master在发出连接请求的时候，需要在ADV_CONNECT_REQ PDU的payload中，定义和连接有关的参数。payload的格式如下：</p>
+<img src="/2019/01/03/ble-theory/sp190104_104518.png" title="data channel的基本PDU结构">
+<p>其中InitA和AdvA分别是Master和Slave的蓝牙地址，LL data则包含了所有的连接参数，包括：</p>
+<ul>
+<li>AA：LL Connection的Access Address，在不同设备组合之间，需要唯一，并遵守一些原则，具体可参考“BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]”。</li>
+<li>CRCInit：用于CRC计算的一个初始值，由LL层随机生成。</li>
+<li>WinSize和WinOffset：全称是transmitWindowSize和transmitWindowOffset，用于决定连接双方收发数据的时间窗口下面会详细介绍。</li>
+<li>connInterval：全称是connInterval，连接双方收发数据的周期。由于一个Master可能会和多个Slave建立连接，因此蓝牙的信道资源不能被某一个LL Connection所独占，所以一个收发周期中，可能有多个连接进行收发数据（具体的时间窗口，由transmitWindowOffset决定）。下面会详细介绍。</li>
+<li>Latency和Timeout：全称是connSlaveLatency和connSupervisionTimeout，和连接超时、自动断开有关，下面会详细介绍。</li>
+<li>ChM的全称是Channel map：用于标识当前使用和未使用的Physical Channel。</li>
+<li>Hop的全称是hopIncrement：它和ChM一起决定了数据传输过程中的跳频算法，下面会详细介绍。</li>
+<li>SCA（sleep clock accuracy）：用于定义最差的Master睡眠时钟精度，具体可参考“BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]”。</li>
+</ul>
+<p>Packet Sniffer抓取的ADV_CONNECT_REQ类型的PDU数据包示例：</p>
+<p>前半段<br><img src="/2019/01/03/ble-theory/ADV_CONNECT_REQ_1.jpg" title="ADV_CONNECT_REQ数据包"></p>
+<p>后半段<br><img src="/2019/01/03/ble-theory/ADV_CONNECT_REQ_2.jpg" title="ADV_CONNECT_REQ数据包"></p>
+<h3 id="连接建立后的通信过程"><a href="#连接建立后的通信过程" class="headerlink" title="连接建立后的通信过程"></a>连接建立后的通信过程</h3><p>BLE连接时序—Master视角：<br><img src="/2019/01/03/ble-theory/sp190104_110000.png" title="BLE连接时序-Master视角"></p>
+<p>BLE连接时序—Slave视角：<br><img src="/2019/01/03/ble-theory/sp190104_110744.png" title="BLE连接时序-Slave视角"></p>
+<p>从Master的视角看，当它发出CONNECT_REQ后，会在1.25 ms + transmitWindowOffset到1.25ms + transmitWindowOffset + transmitWindowSize之间，发送第一个packet（M-&gt;S）。同理，Slave在收到CONNECT_REQ之后，也会在相应的时间区间去接收packet（M-&gt;S）。</p>
+<ul>
+<li>transmitWindowOffset可以控制这个LL Connection使用哪一段时间进行通信，从而保证了同一个Master和多个Slave之间的多个连接，可以互不影响的通信（时分）。transmitWindowOffset的取值范围是：0 ms到connInterval（后面会介绍connInterval）。</li>
+<li>从Master发出CONNECT_REQ，到Slave接收到CONNECT_REQ，是有一定的时间延迟的，因此需要一定的时间窗口（transmitWindowSize），才能保证第一个packet能否正确的发送并被接收。transmitWindowSize必须是1.25ms的倍数，最小值是1.25 ms，最大值是（connInterval - 1.25 ms），但不能超过10ms。</li>
+<li>正常情况下，所有“M-&gt;S”数据包的发送，不能超过transmitWindowSize，以便留出S-&gt;M的时间。但第一个packet例外（参考Master视角图）。</li>
+</ul>
+<p>Master发出第一个packet之后，将以此为起始点（称作anchor point），以connInterval为周期，接着发送后续的packet（M-&gt;S），以及接收Slave的packet（S-&gt;M）（参考Master视角图）。</p>
+<ul>
+<li>这样以connInterval为周期的发送（M-&gt;S）、接收（S-&gt;M）组合（可能有多个），称作Connection Event。因此BLE面向连接的通信的基础，就是Connection Event。</li>
+<li>connInterval的大小，决定了数据传输的周期。对一个连接来说，每个周期只能有一次的收发，因此connInterval的选择，直接决定了数据传输的速度。BLE协议规定，connInterval必须是1.25ms的倍数，范围是7.5ms~4s。</li>
+</ul>
+<p>Slave如果没有收到第一个packet（M-&gt;S），则会以1.25 ms + transmitWindowOffset为起点，等待connInterval之后，再次尝试接收，直到接收到为止。Slave接收到packet之后，则以收到该packet的时间点为起始点（anchor point），以connInterval为周期，接着接收后续的packet（M-&gt;S），以及发送packet给Master（S-&gt;M）（参考Slave视角图）。</p>
+<p><strong>注3：关于数据传输的速率：<br>由上面的通信过程可知，BLE面向连接的通信速率，是由connInterval以及每个Connection Event中所传输的数据量决定的。<br>LL Data PDU的有效负荷不能超过255（251）bytes，不过考虑到一次传输的效率、错误处理等因素，具体的Link Layer不会使用这么大的packet。相应地，为了提高传输速度，一般会在一个Connection Event中，传输多个packet。以iOS为例，它可能会在一个Connection Event中，传输6个packets，每个packet的长度是20bytes。<br>另外，很多平台为了保证自身作为Master的性能，会限制connInterval的最小值，以iOS为例，最小值是30ms。因此，可估算得到相应的传输速率为20B * 6 / 30ms = 32kbps，是相当缓慢的。</strong></p>
+<p><strong>注4：BLE的面向连接通信是使用跳频技术的，即每次Connection Event，都会使用不同Physical Channel收发数据，具体的跳频机制，可参考后面章节。</strong></p>
+<h3 id="连接的控制与管理"><a href="#连接的控制与管理" class="headerlink" title="连接的控制与管理"></a>连接的控制与管理</h3><p>连接建立之后，Master或者Slave可以借助Link Layer Control Protocol (LLCP)，通过LL Control PDU，对连接进行管理控制，包括：</p>
+<ul>
+<li>Connection Update Procedure，连接参数（包括connInterval，connSlaveLatency，connSupervisionTimeout）更新的通知。只能由Master发起。</li>
+<li>Channel Map Update Procedure，更新Channel map。只能由Master发起。</li>
+<li>Encryption Procedure，对连接进行加密，可由master或者slave发起。</li>
+<li>Termination Procedure，断开连接。</li>
+<li>Connection Parameters Request Procedure，请求更新连接参数（connInterval，connSlaveLatency，connSupervisionTimeout），Slave或者Master都可以发起，和Connection Update Procedure不同是，这是一个协商的过程，不是一定能够成功。</li>
+<li>LE Ping Procedure，类似于网络协议中ping操作。</li>
+</ul>
+<p>Packet Sniffer抓取的连接参数更新PDU数据包示例：</p>
+<img src="/2019/01/03/ble-theory/Connection_Update_Req.jpg" title="连接参数更新数据包">
+<p>这里不详细介绍，具体可参考“BLUETOOTH SPECIFICATION Version 4.2 [Vol 6, Part B]”。</p>
+<h3 id="连接超时及断开"><a href="#连接超时及断开" class="headerlink" title="连接超时及断开"></a>连接超时及断开</h3><p>BLE连接断开的原因有两种：一种是预期内的、主动断开，此时会走上一节提到的Termination Procedure过程；第二种是一些非预期的原因导致的超时断开，如距离超出、遭受严重的干扰、突然断电等。</p>
+<p>对于第一种，是协议内的正常流程，这里不再描述。而对于第二种，则需要timeout机制，检测这些异常情况，具体如下：</p>
+<ol>
+<li>Master和Slave的LL层，都会启动一个名称为TLLconnSupervision的timer，每接收到一个有效的数据包时，该timer都会重置。</li>
+<li>连接建立的过程中，如果TLLconnSupervision超过6 * connInterval（没有接收到第一个数据包），则认为连接建立失败。</li>
+<li>在连接成功之后，如果TLLconnSupervision超过connSupervisionTimeout，则说明link loss，则执行超时断开。connSupervisionTimeout是一个可配置的参数，范围是100ms~32s，并且不能大于(1 + connSlaveLatency) <em> connInterval </em> 2。</li>
+<li>BLE协议允许slave忽略掉“connSlaveLatency”个Connection Event，在被忽略的这段时间内，Slave不需要收发数据包，也不会增加TLLconnSupervision，从而引发超时断开。connSlaveLatency是一个整数，有效范围应该在0到((connSupervisionTimeout / (connInterval*2)) - 1)之间，并且不能大于500。</li>
+</ol>
+<p><strong>注5：connSlaveLatency是一个非常有用的参数，它允许Slave在数据通信不频繁的时候，忽略掉一些Connection Event，进而可以睡得更久，更加省电。</strong></p>
+<h3 id="跳频（Hopping）策略"><a href="#跳频（Hopping）策略" class="headerlink" title="跳频（Hopping）策略"></a>跳频（Hopping）策略</h3><p>BLE的跳频策略是非常简单的，即：每一个Connection Event，更换一次Physical Channel，当然，master和slave需要按照相同的约定更换，不然就无法通信。这个约定如下：</p>
+<img src="/2019/01/03/ble-theory/sp190104_113858.png" title="BLE跳频策略">
+<p>首先，使用一个Basic的算法，利用lastUnmappedChannel和hopIncrement，计算出unmappedChannel。</p>
+<ul>
+<li>lastUnmappedChannel在连接建立之初的值是0，每一次Connection Event计算出新的unmappedChannel之后，会更新lastUnmappedChannel。</li>
+<li>hopIncrement是由Master在连接建立时随机指定的，范围是5到16（可参考3.3中的Hop）。</li>
+<li>确定unmappedChannel的算法为：unmappedChannel = (lastUnmappedChannel + hopIncrement) mod 37，本质上就是每隔“hopIncrement”个Channel取一次，相当直白和简单。</li>
+</ul>
+<p>计算出unmappedChannel之后，查找当前的Channel map，检查unmappedChannel所代表的Channel是否为used channel。如果是，恭喜，找到了。</p>
+<ul>
+<li>Channel map也是由master，在连接建立时，或者后来的Channel map update的时候指定的。</li>
+</ul>
+<p>如果不是，将所有的used Channel以升序的方式建一个表，表的长度是numUsedChannels，用unmappedChannel和numUsedChannels做模运算，得到一个index，从表中取出该index对应的channel即可。</p>
+<h3 id="应答-Acknowledgement-和流控-Flow-Control"><a href="#应答-Acknowledgement-和流控-Flow-Control" class="headerlink" title="应答(Acknowledgement)和流控(Flow Control)"></a>应答(Acknowledgement)和流控(Flow Control)</h3><p>LL Data PDU的Header中，有NESN（Next Expected Sequence Number）和SN（Sequence Number）两个标记，利用它们，可以很轻松的在LL层实现应答、重传、流控等机制。</p>
+<p>为了实现这些功能，LL层会为每个连接创建两个变量，transmitSeqNum和nextExpectedSeqNum（为了和packet的SN/NESN bit区分，我们将它们简称为sn和nesn），并在连接建立的时候，它们都被初始化为0。</p>
+<ul>
+<li>sn用于标识本地设备（LL层）发送出去的packets。</li>
+<li>nesn是对端设备（LL层）用来应答本地设备发送的packet，或者请求本地设备重发packet。</li>
+</ul>
+<p>LL层在收发packet时，会遵循如下的原则：</p>
+<ul>
+<li>无论是Master还是Slave，发送packet的时候，都会将当前的sn和nesn copy到packet的SN和NESN bit中。</li>
+<li>无论是Master还是Slave，当接收到一个packet的时候，会将该packet的NESN bit和本地的sn比较：如果相同，说明该packet是对端设备发来的NAK packet（请求重发），则需要将旧的packet重新发送出去；如果不同，说明是对端设备发来的ACK packet（数据被正确接收），则需要将本地的sn加1，接着发送新的packet。</li>
+<li>无论是Master还是Slave，当接收到一个packet的时候，会将该packet的SN bit和本地的nesn比较：如果相同，则说明是一个新的packet，接收即可，同时将本地的nesn加1；如果不同，则说明是一个旧的packet，什么都不需要处理。</li>
+<li>当一个设备无法接收新的packet的时候（例如RX buffer已满），它可以采取不增加nesn的方式，发送NAK packet。对端设备收到该类型的packet之后，会发送旧的packet。该设备收到这样旧的packet的时候，不会做任何处理。这就是LL层的流控机制（Flow control）。</li>
+</ul>
+<h3 id="从协议栈Controler端到Host端"><a href="#从协议栈Controler端到Host端" class="headerlink" title="从协议栈Controler端到Host端"></a>从协议栈Controler端到Host端</h3><p>通过上面章节对PHY、LL层的数据传输的描述，我们对整个协议栈Controler部分（包括PHY、LL和HCI层，HCI主要是对通信和配置接口的封装）有了基本的理解。<br>那么真正和应用层如何解析数据和更新数据，就需要Host部分参与进来了。</p>
+<p>还是从实际通信数据出发，我们一步步看Host端如何协助应用层完成数据解析和更新。</p>
+<h3 id="广播通信包的应用层数据解析"><a href="#广播通信包的应用层数据解析" class="headerlink" title="广播通信包的应用层数据解析"></a>广播通信包的应用层数据解析</h3><p>由于图没保存，直接上一张别人抓包的图。</p>
+<img src="/2019/01/03/ble-theory/广播态数据传输例子2.png" title="广播数据包">
+<p>直接看应用层数据，也就是<code>AdvData</code>部分。它属于广播包，而广播和扫描响应数据包的数据格式定义是在GAP中：</p>
+<img src="/2019/01/03/ble-theory/sp190104_171001.png" title="AdvData数据格式">
+<ul>
+<li>广播和扫描响应数据包最长为31个字节</li>
+<li>分为有效数据部分和无效数据部分</li>
+<li>有效数据部分由N个AD Structure组成</li>
+<li>每个AD Structure的格式都是Length|AD Type|AD Data。</li>
+<li>Length的长度是1bytes</li>
+<li>AD Type的长度是1 bytes（图中是n octets，其实文档中描述的是1 octets）</li>
+</ul>
+<p>AD Type的格式和适用性在增补协议文档中<code>&lt;&lt;Supplement to the Bluetooth Core Specification&gt;&gt;</code>定义，但是具体值（也叫assigned-numbers）则由官网负责维护：<a href="https://www.bluetooth.com/specifications/assigned-numbers" target="_blank" rel="noopener">https://www.bluetooth.com/specifications/assigned-numbers</a></p>
+<p>在解析应用层数据时，需要根据这两份文档来确定数据的实际含义。<br>AD Type的值在GAP文档中可以查到：<a href="https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile" target="_blank" rel="noopener">https://www.bluetooth.com/specifications/assigned-numbers/generic-access-profile</a> </p>
+<p>下面开始分析第一个AD Structure数据的意义：</p>
+<table>
+<thead>
+<tr>
+<th>Length</th>
+<th style="text-align:right">AD Type</th>
+<th style="text-align:center">AD Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0B</td>
+<td style="text-align:right">09</td>
+<td style="text-align:center">4E 6F 72 64 69 63 5F 48 52 4D</td>
+</tr>
+<tr>
+<td>11字节</td>
+<td style="text-align:right">Complete Local Name</td>
+<td style="text-align:center">Nordic_HRM</td>
+</tr>
+</tbody>
+</table>
+<img src="/2019/01/03/ble-theory/sp190106_164744.png" title="Complete Local Name">
+<p>第二个AD Structure数据的意义</p>
+<table>
+<thead>
+<tr>
+<th>Length</th>
+<th style="text-align:right">AD Type</th>
+<th style="text-align:center">AD Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>03</td>
+<td style="text-align:right">19</td>
+<td style="text-align:center">34 12</td>
+</tr>
+<tr>
+<td>3字节</td>
+<td style="text-align:right">Appearance</td>
+<td style="text-align:center">Appearance是一个16位的数值，由SIG定义，用来列举设备的外观样式，指示设备是普通手机，手环什么的。</td>
+</tr>
+</tbody>
+</table>
+<img src="/2019/01/03/ble-theory/sp190106_172154.png" title="Appearance">
+<p>第三个AD Structure数据的意义</p>
+<table>
+<thead>
+<tr>
+<th>Length</th>
+<th style="text-align:right">AD Type</th>
+<th style="text-align:center">AD Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>02</td>
+<td style="text-align:right">01</td>
+<td style="text-align:center">06</td>
+</tr>
+<tr>
+<td>2字节</td>
+<td style="text-align:right">Flag</td>
+<td style="text-align:center">flag说明了物理连接功能，比如有限发现模式，不支持经典蓝牙等。<br>bit 0: LE 有限发现模式<br>bit 1: LE 普通发现模式<br>bit 2: 不支持 BR/EDR<br>bit 3: 对 Same Device Capable(Controller) 同时支持 BLE 和 BR/EDR<br>bit 4: 对 Same Device Capable(Host) 同时支持 BLE 和 BR/EDR<br>bit 5..7: 预留</td>
+</tr>
+</tbody>
+</table>
+<img src="/2019/01/03/ble-theory/sp190106_173329.png" title="Flag">
+<p>第四个AD Structure数据的意义</p>
+<table>
+<thead>
+<tr>
+<th>Length</th>
+<th style="text-align:right">AD Type</th>
+<th style="text-align:center">AD Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>07</td>
+<td style="text-align:right">03</td>
+<td style="text-align:center">0D 18 0F 18 0A 18</td>
+</tr>
+<tr>
+<td>7字节</td>
+<td style="text-align:right">Complete List of 16-bit Service Class UUIDs</td>
+<td style="text-align:center">该设备支持的完整的16bit Service uuid列表。<br>180D：Heart Rate service UUID(心率服务UUID)<br> 180F：Battery service UUID(电池服务UUID)<br>180A：Device Information service UUID(设备信息服务UUID)</td>
+</tr>
+</tbody>
+</table>
+<img src="/2019/01/03/ble-theory/sp190106_173637.png" title="Appearance">
+<h3 id="16bit-UUID"><a href="#16bit-UUID" class="headerlink" title="16bit UUID"></a>16bit UUID</h3><p>128位的UUID相当长，设备间为了识别数据的类型需要发送长达16字节的数据。为了提高传输效率，蓝牙技术联盟(SIG)定义了一个称为“UUID基数”的128位通用唯一识别码，结合一个较短的16位数使用。二者仍然遵循通用唯一识别码的分配规则，只不过在设备间传输常用的UUID时，只发送较短的16位版本，接收方收到后补上蓝牙UUID基数即可。</p>
+<p>蓝牙UUID基数如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00000000 – 0000 – 1000 – 8000 – 008059B34FB</span><br></pre></td></tr></table></figure></p>
+<p>如要发送的16位UUID为0x2A01，完整的128的UUID便是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00002A01 – 0000 – 1000 – 8000 – 008059B34FB</span><br></pre></td></tr></table></figure></p>
+<h3 id="GATT"><a href="#GATT" class="headerlink" title="GATT"></a>GATT</h3><p>16bit UUID可以理解为基于GATT协议规范的一个唯一标识码，GATT 的全名是 Generic Attribute Profile，它定义两个 BLE 设备通过叫做 Service 和 Characteristic 的东西进行通信。GATT 就是使用了 ATT（Attribute Protocol）协议，ATT 协议把 Service, Characteristic以及对应的数据保存在一个查找表中，此查找表使用16 bit ID作为每一项的索引。</p>
+<p>GATT的结构如下：</p>
+<img src="/2019/01/03/ble-theory/sp190106_214825.png" title="GATT结构">
+<p>其中Service可以理解为蓝牙设备提供的服务,服务可以有多个，蓝牙客户端可以通过Service的标识码（UUID）来获取蓝牙服务。<br>而Characteristic则可以理解为蓝牙提供的各种服务中对应的信息，比如心率、电量等具体信息。</p>
+<p>下面地址列出了一些通用性的GATT Service供参考：<br><a href="https://www.bluetooth.com/specifications/gatt/services" target="_blank" rel="noopener">https://www.bluetooth.com/specifications/gatt/services</a></p>
+<p>示例中使用到的Services：</p>
+<img src="/2019/01/03/ble-theory/sp190106_220652.png" title="GATT结构">
+<p>所以从示例的广播包中，我们可以知道蓝牙设备的设备名称、设备外观、设备支持的物理连接特性、设备支持的Services等。</p>
+<h3 id="SDP-服务发现协议"><a href="#SDP-服务发现协议" class="headerlink" title="SDP(服务发现协议)"></a>SDP(服务发现协议)</h3><p>到这里我们终于知道广播包中可以广播设备所支持的的Services，而通过这种方式我们可以知道蓝牙所支持的服务。<br>但是通过广播这种方式很明显受到了一定的限制，如果广播中没有列出Services怎么办呢？<br>这里就引出了蓝牙协议栈中的另一个上层核心协议SDP，也就是服务发现协议。<br>通过这个协议，我们可以获取到一台未知的蓝牙设备上的所有Services和包含的Characteristic。然后通过不同的命令（读\写\通知）来操作或者获取这些Characteristic，最终完成我们的业务功能。<br>那么Characteristic的操作我们后面再说，先看看SDP是如何完成服务发现的。</p>
+<p>SDP的协议是基于C/S模型设计的，服务器和客户端之间的交互的格式是SDP PUD：</p>
+<img src="/2019/01/03/ble-theory/sp190107_134420.png" title="SDP PDU">
+<p>PDU ID: 表示服务发现协议中的请求和应答指令。<br>TransactionID：一次请求应答的唯一标识。<br>ParameterLength：PDU中所有的parameters的长度。</p>
+<p>按照PDU的设计，其支持的请求应答指令包括：</p>
+<img src="/2019/01/03/ble-theory/sp190107_134903.png" title="SDP PDU">
+<p>按照具体的请求应答指令可以组合成如下的业务场景：</p>
+<h4 id="SDP场景：ERROR-HANDLING"><a href="#SDP场景：ERROR-HANDLING" class="headerlink" title="SDP场景：ERROR HANDLING"></a>SDP场景：ERROR HANDLING</h4><img src="/2019/01/03/ble-theory/sp190107_135836.png" title="ERROR HANDLING">
+<p>SDP客户端如果发送了未正确格式化的请求PDU，或者在SDP服务器由于某些原因而不能生成合适的应答PDU时，SDP服务器会返回<code>SDP_ErrorResponse</code>应答，应答包含了错误码信息<code>ErrorCode</code>：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ErrorResponse</td>
+<td style="text-align:left">0x01</td>
+<td style="text-align:left">ErrorCode</td>
+</tr>
+</tbody>
+</table>
+<h4 id="SDP场景：SERVICESEARCH-TRANSACTION"><a href="#SDP场景：SERVICESEARCH-TRANSACTION" class="headerlink" title="SDP场景：SERVICESEARCH TRANSACTION"></a>SDP场景：SERVICESEARCH TRANSACTION</h4><img src="/2019/01/03/ble-theory/sp190107_150506.png" title="SERVICESEARCH TRANSACTION">
+<p>SDP客户端生成一个带服务搜索模式参数的<code>SDP_ServiceSearchRequest</code>来查找服务器的服务记录，服务搜索模式参数是该PDU的首个参数。一收到该请求，SDP服务器将检查其服务记录数据库，并将返回包含服务记录句柄的<code>SDP_ServiceSearchResponse</code>。</p>
+<p><code>SDP_ServiceSearchRequest</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceSearchRequest</td>
+<td style="text-align:left">0x02</td>
+<td style="text-align:left">ServiceSearchPattern,<br>MaximumServiceRecordCount,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ServiceSearchPattern：元素内容为UUID的数据元素序列（data element sequence）</li>
+<li>MaximumServiceRecordCount：服务器可以返回的最大服务记录handles数量（16-bit）</li>
+<li>ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<p><code>SDP_ServiceSearchResponse</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceSearchResponse</td>
+<td style="text-align:left">0x03</td>
+<td style="text-align:left">TotalServiceRecordCount,<br>CurrentServiceRecordCount,<br>ServiceRecordHandleList,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>TotalServiceRecordCount：所有满足客户端发送的服务搜索模式参数的服务记录数量（2 Bytes）</li>
+<li>CurrentServiceRecordCount：当前PDU中返回的服务记录数量（2 Bytes）</li>
+<li>ServiceRecordHandleList：返回的服务记录Handlers列表（ CurrentServiceRecordCount*4 Bytes）</li>
+<li>ContinuationState：ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<h4 id="SDP场景：SERVICEATTRIBUTE-TRANSACTION"><a href="#SDP场景：SERVICEATTRIBUTE-TRANSACTION" class="headerlink" title="SDP场景：SERVICEATTRIBUTE TRANSACTION"></a>SDP场景：SERVICEATTRIBUTE TRANSACTION</h4><img src="/2019/01/03/ble-theory/sp190107_161740.png" title="SERVICEATTRIBUTE TRANSACTION">
+<p>SDP客户端通过提供服务记录Handler和查找的属性范围生成一个<code>SDP_ServiceAttributeRequest</code>来查找服务器对应服务下的指定属性。一收到该请求，SDP服务器将检查其服务记录数据库，并将返回包含服务属性列表的<code>SDP_ServiceAttributeResponse</code>。</p>
+<p><code>SDP_ServiceAttributeRequest</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceAttributeRequest</td>
+<td style="text-align:left">0x04</td>
+<td style="text-align:left">ServiceRecordHandle,<br>MaximumAttributeByteCount,<br>AttributeIDList,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ServiceRecordHandle：待查找属性所属的服务记录Handler（4 Bytes）</li>
+<li>MaximumAttributeByteCount：服务器可以返回的最大属性数据数量（2 Bytes）</li>
+<li>AttributeIDList：元素内容为UUID的数据元素序列（data element sequence）</li>
+<li>ContinuationState：ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<p><code>SDP_ServiceAttributeResponse</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceAttributeResponse</td>
+<td style="text-align:left">0x05</td>
+<td style="text-align:left">AttributeListByteCount,<br>AttributeList,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>AttributeListByteCount：所有查询到的属性数据数量（2 Bytes）</li>
+<li>AttributeList：返回的包含attribute ID和attribute value的数据元素序列（data element sequence）</li>
+<li>ContinuationState：ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<h4 id="SDP场景：SERVICESEARCHATTRIBUTE-TRANSACTION"><a href="#SDP场景：SERVICESEARCHATTRIBUTE-TRANSACTION" class="headerlink" title="SDP场景：SERVICESEARCHATTRIBUTE  TRANSACTION"></a>SDP场景：SERVICESEARCHATTRIBUTE  TRANSACTION</h4><img src="/2019/01/03/ble-theory/sp190107_163243.png" title="SERVICESEARCHATTRIBUTE TRANSACTION">
+<p><code>SDP_ServiceSearchAttributeRequest</code>事务综合<br><code>SDP_ServiceSearchRequest</code>和<code>SDP_ServiceAttributeRequest</code>二者功能于一个请求中。其参数既包含服务搜索模式，又包含一张属性表，该属性表从与服务搜索模式匹配的服务记录中检索属性。<br><code>SDP_ServiceSearchAttributeRequest</code>及其应答与<code>SDP_ServiceSearch</code>和<code>SDP_ServiceAttribute</code>两者相比，显得更复杂并且可能需要更多的字节。但是,使用<code>SDP_ServiceSearchAttributeRequest</code>可以减少总的SDP事务<br>量,特别是当检索多条服务记录时。</p>
+<p><code>SDP_ServiceSearchAttributeRequest</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceSearchAttributeRequest</td>
+<td style="text-align:left">0x06</td>
+<td style="text-align:left">ServiceSearchPattern,<br>MaximumAttributeByteCount,<br>AttributeIDList,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ServiceSearchPattern：元素内容为UUID的数据元素序列（data element sequence）</li>
+<li>MaximumAttributeByteCount：服务器可以返回的最大属性数据数量（2 Bytes）</li>
+<li>AttributeIDList：元素内容为attribute ID或者attribute<br>ID range的数据元素序列，用于查找服务的属性（data element sequence）</li>
+<li>ContinuationState：ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<p><code>SDP_ServiceSearchAttributeResponse</code>的参数如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">PDU Type</th>
+<th style="text-align:left">PDU ID</th>
+<th style="text-align:left">Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SDP_ServiceSearchAttributeResponse</td>
+<td style="text-align:left">0x07</td>
+<td style="text-align:left">AttributeListByteCount,<br>AttributeList,<br>ContinuationState</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>AttributeListByteCount：所有查询到的属性数据数量（2 Bytes）</li>
+<li>AttributeList：返回的包含attribute ID和attribute value的数据元素序列（data element sequence）</li>
+<li>ContinuationState：ContinuationState：当应答长度不足时用于分包传输，如果一次能传输完成则只有一个字节,数值为0（1-17 Bytes）</li>
+</ul>
+<h4 id="SDP场景通信示例"><a href="#SDP场景通信示例" class="headerlink" title="SDP场景通信示例"></a>SDP场景通信示例</h4><p>下面以SERVICESEARCHATTRIBUTE  TRANSACTION场景为例，来看具体的SDP通信。</p>
+<p>SDP_ServiceSearchAttributeRequest数据帧，这里转换成二进制方便后面理解Data Element格式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">00001001 00000000 00010100 00000000 00010100 00000000 01000100 00000000 00000110 00000000 00000000 00000000 00001111 00110101 00000011 00011001 00000001 00000000 00000011 11111000 00110101 00000101 00001010 00000000 00000000 11111111 11111111 00000000</span><br></pre></td></tr></table></figure></p>
+<p>最前面四个字节是HCI层的包装：</p>
+<ul>
+<li>Connection Handle（00001001 00000000）：0x09</li>
+<li>Total Length（00010100 00000000）：0x0014 = 20<br>接着四个字节是L2CAP层的包装：</li>
+<li>PDU Length（00010100 00000000）：0x0014 = 20</li>
+<li>Channel ID（01000100 00000000）：0x0044</li>
+</ul>
+<p>从协议栈的角度来说，SDP协议是在HCI和L2CAP的上层，因此在SDP协议之前会有HCI层和L2CAP层的帧结构，由于我们是从广播帧的UUID展开来说服务发现的内容，所以HCI和L2CAP这一部分内容放到后面再说，继续看SDP部分。</p>
+<p>接着是SDP PDU：</p>
+<ul>
+<li>PDU ID（00000110）:0x06 = <code>SDP_ServiceSearchAttributeRequest</code></li>
+<li>Transaction ID（00000000 00000000）：0x0000</li>
+<li>Parameter Length（00000000 00001111）：0x000f = 15</li>
+</ul>
+<p>接着是SDP PDU的Parameters部分，根据<code>SDP_ServiceSearchAttributeRequest</code>命令的描述，第一个参数是<code>ServiceSearchPattern</code>，其类型是data element sequence。在分析Parameters部分之前，我们先要了解data element sequence是如何解析的。<br>data element sequence其实是data element的其中一种类型，而要区分data element的类型，先要知道data element的数据格式，为了便于理解，我们先看蓝牙核心文档中的示例，在来了解data element的具体定义：</p>
+<img src="/2019/01/03/ble-theory/sp190107_170627.png" title="data element example">
+<p>data element定义的是一种可变长度的数据格式，它通过第一个字节的high 5 bit来确定数据类型，通过low 3 bit来确定数据的大小。</p>
+<p>协议文档中分别列出了data element通过high 5 bit确定的数据类型如下：</p>
+<img src="/2019/01/03/ble-theory/sp190107_171346.png" title="DATA ELEMENT TYPE DESCRIPTOR">
+<p>可以看到其中包括了Data element sequence数据类型。</p>
+<p>协议文档也列出了data element通过low 3 bit确定的数据大小如下：</p>
+<img src="/2019/01/03/ble-theory/sp190107_171542.png" title="DATA ELEMENT SIZE DESCRIPTOR">
+<p>理解了data element格式后，下面继续SDP PDU的Parameters部分的解读。</p>
+<p><code>ServiceSearchPattern</code>参数：</p>
+<ul>
+<li>data element type（00110101的high 5 bit）：00110 = 0x06 = data element sequence</li>
+<li>data element size（00110101的low 3 bit）：101 = 0x05 = additional 8 bits，表示单独有一个byte保存data element的大小，也就是下一个byte才是data element的大小</li>
+<li>real data element size（00000011）：0x03 表示data element的大小是3 bytes</li>
+<li>第二个data element type（00011001的high 5 bit）：00011 = 0x03 = UUID</li>
+<li>第二个data element size（00011001的low 3 bit）：001 = 0x01 = 2 bytes</li>
+<li>UUID（00000001 00000000）：0x0100 = L2CAP</li>
+</ul>
+<p>以上完成了<code>ServiceSearchPattern</code>参数的解析，下面开始<code>MaximumAttributeByteCount</code>参数（2 bytes）：</p>
+<ul>
+<li>MaximumAttributeByteCount（00000011 11111000）：0x03f8 = 1016</li>
+</ul>
+<p>接着<code>AttributeIDList</code>参数，同样也是data element sequence类型：</p>
+<ul>
+<li>data element type（00110101的high 5 bit）：00110 = 0x06 = data element sequence</li>
+<li>data element size（00110101的low 3 bit）：101 = 0x05 = additional 8 bits，表示单独有一个byte保存data element的大小，也就是下一个byte才是data element的大小</li>
+<li>real data element size（00000101）：0x05 表示data element的大小是5 bytes</li>
+<li>第二个data element type（00001010的high 5 bit）：00001 = 0x01 = Unsigned Integer</li>
+<li>第二个data element size（00001010的low 3 bit）：010 = 0x02 = 4 bytes，这样表示的就是一个attribute ID range</li>
+<li>attribute ID range（00000000 00000000 11111111 11111111）：表示的就是从0x0000到0xffff的attribute ID</li>
+</ul>
+<p>接着最后一个参数<code>ContinuationState</code>：</p>
+<ul>
+<li>ContinuationState（00000000）：0x00</li>
+</ul>
+<p>所以这个<code>SDP_ServiceSearchAttributeRequest</code>的目的是搜索服务器上L2CAP服务上的所有Attributes。<br>应答数据结构和请求格式类型，要特殊说明的是<code>ContinuationState</code>参数和<code>TransactionID</code>参数的运用存在两种情况。</p>
+<p>当一次应答可以返回所有数据时，不需要Continuation State：</p>
+<ul>
+<li>A—&gt;B 发送SDP request，<code>TransactionID</code>为C</li>
+<li>B—&gt;A 发送SDP respose，<code>TransactionID</code>为C。假设一次resposne可以返回所有数据，则Continuation State为1个字节=0。</li>
+</ul>
+<p>当一次应答不够返回所有数据时，需要Continuation State：</p>
+<ul>
+<li>A—&gt;B 发送SDP request，transaction ID为C</li>
+<li>B—&gt;A 发送SDP respose，transaction ID为C。假设一次resposne不够返回所有数据，这时response携带Continuation State M</li>
+<li>A—&gt;B 发送SDP request，transaction ID为D(必须与C不同）,携带Continuation State M</li>
+<li>B—&gt;A 发送SDP respose，transaction ID为D。假设这次resposne还不够返回所有数据，这时response携带Continuation State N</li>
+<li>A—&gt;B 发送SDP request，transaction ID为E,携带Continuation State N</li>
+<li>B—&gt;A 发送SDP respose，transaction ID为E。假设一次resposne返回的是最后的一部分数据，则Continuation State为1个字节=0。整个request-response的流程结束。</li>
+</ul>
+<h3 id="L2CAP"><a href="#L2CAP" class="headerlink" title="L2CAP"></a>L2CAP</h3><p>在上面提到了SDP协议是在L2CAP之上的协议，所以我们回头看一下L2CAP部分。</p>
+<p>L2CAP层向上层提供面向连接或者无连接的数据服务，通过CID来标识两个端点之间的连接。<br>下面是LE-U支持的CIDs：</p>
+<img src="/2019/01/03/ble-theory/sp190107_230137.png" title="CIDs">
+<p>而根据信道类型的不同，建立不同类型的L2CAP连接的CID规则如下：</p>
+<img src="/2019/01/03/ble-theory/sp190107_231046.png" title="CID信道分类">
+<h3 id="L2CAP包格式"><a href="#L2CAP包格式" class="headerlink" title="L2CAP包格式"></a>L2CAP包格式</h3><p>L2CAP的数据格式是基于package，按照上面的信道和CID，L2CAP的数据包格式分为几种情况。</p>
+<p>第一种，面向连接的基本L2CAP模式：</p>
+<img src="/2019/01/03/ble-theory/sp190107_232041.png" title="面向连接的基本L2CAP模式">
+<ul>
+<li>Length：Information payload部分的长度（2 bytes）</li>
+<li>Channel ID：通道标识CID</li>
+<li>Information payload：上层数据（0-65535 bytes）</li>
+</ul>
+<p>结合上一节通过SDP，假设我们已经建立连接，并且获取到了服务的Attribute。然后我们需要读取Attribute的数值：</p>
+<img src="/2019/01/03/ble-theory/sp190107_233007.png" title="读取Attribute值">
+<ul>
+<li>L2CAP-Length：ATT_Read_Req的数据长度为3 bytes</li>
+<li>ChanId：读写Attribute使用的是Attribute Protocol，也就是0x0004 fixed Channel。</li>
+<li>Information payload：这里的payload使用的是上层Attribute Protocol中对应的<code>Read Request</code>命令。</li>
+</ul>
+<img src="/2019/01/03/ble-theory/sp190107_233823.png" title="read Request命令">
+<p><code>Read Request</code>命令：</p>
+<ul>
+<li>Attribute Opcode：1 byte的操作码,固定为0x0A</li>
+<li>Attribute Handle：2 bytes的Attribute handle，例子中为0x0033</li>
+</ul>
+<img src="/2019/01/03/ble-theory/sp190107_233823.png" title="read Response命令">
+<p><code>Read Response</code>命令：</p>
+<ul>
+<li>Attribute Opcode：1 byte的操作码,固定为0x0B</li>
+<li>Attribute Handle：ATT_MTU-1 bytes的值，例子中为01 02 03 04 05</li>
+</ul>
+<p>同样可以看到写Attribute和Attribute通知也是采用相同的CID通道：</p>
+<img src="/2019/01/03/ble-theory/sp190107_234644.png" title="写Attribute值">
+<img src="/2019/01/03/ble-theory/sp190107_234855.png" title="Attribute通知">
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>文章很长，基本上概况了协议栈大部分的知识点。但是内容相对比较浅，想更深入的理解协议栈还是需要多看蓝牙核心规范文档。此文章参考下面文章，都从协议栈的某个层面深入描述了其知识点。可以作为扩展阅读。</p>
+<p><a href="http://www.wowotech.net/bluetooth/ble_broadcast.html" target="_blank" rel="noopener">http://www.wowotech.net/bluetooth/ble_broadcast.html</a><br><a href="http://www.wowotech.net/bluetooth/ble_connection.html" target="_blank" rel="noopener">http://www.wowotech.net/bluetooth/ble_connection.html</a><br><a href="http://blog.sina.com.cn/s/blog_69b5d2a50101f23c.html" target="_blank" rel="noopener">http://blog.sina.com.cn/s/blog_69b5d2a50101f23c.html</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+			<a href="/tags/蓝牙/" <i="" class="fa fa-tag"> 蓝牙</a>
+          
+			<a href="/tags/ble/" <i="" class="fa fa-tag"> ble</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/16/netty-start/" rel="next" title="netty启动详细记录">
+                <i class="fa fa-chevron-left"></i> netty启动详细记录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/7.jpg" alt="photosyn">
+            
+              <p class="site-author-name" itemprop="name">photosyn</p>
+              <p class="site-description motion-element" itemprop="description">学习，生活</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://photosyn.github.io" title="GitHub &rarr; https://photosyn.github.io" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#标准蓝牙-Classic-Bluetooth-与低功耗蓝牙-Bluetooth-Low-Energy"><span class="nav-number">1.</span> <span class="nav-text">标准蓝牙(Classic Bluetooth)与低功耗蓝牙(Bluetooth Low Energy)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BLE协议栈介绍"><span class="nav-number">2.</span> <span class="nav-text">BLE协议栈介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链路层角色介绍"><span class="nav-number">3.</span> <span class="nav-text">链路层角色介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#链路层状态机介绍"><span class="nav-number">4.</span> <span class="nav-text">链路层状态机介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Standby（就绪态）"><span class="nav-number">4.1.</span> <span class="nav-text">Standby（就绪态）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Advertising（广播态）"><span class="nav-number">4.2.</span> <span class="nav-text">Advertising（广播态）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Scanning（扫描态）"><span class="nav-number">4.3.</span> <span class="nav-text">Scanning（扫描态）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Initiating（发起态）"><span class="nav-number">4.4.</span> <span class="nav-text">Initiating（发起态）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Connection（连接态）"><span class="nav-number">4.5.</span> <span class="nav-text">Connection（连接态）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据传输格式"><span class="nav-number">5.</span> <span class="nav-text">数据传输格式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#广播态数据传输例子"><span class="nav-number">5.1.</span> <span class="nav-text">广播态数据传输例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#连接态数据传输例子"><span class="nav-number">5.2.</span> <span class="nav-text">连接态数据传输例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#advertising-channel对应的PDU"><span class="nav-number">6.</span> <span class="nav-text">advertising channel对应的PDU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Advertising（广播态）通信"><span class="nav-number">7.</span> <span class="nav-text">Advertising（广播态）通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Advertising-Channel的选择"><span class="nav-number">7.1.</span> <span class="nav-text">Advertising Channel的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Advertising-Event的定义"><span class="nav-number">7.2.</span> <span class="nav-text">Advertising Event的定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Advertising-Event-Type"><span class="nav-number">7.3.</span> <span class="nav-text">Advertising Event Type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Advertising周期的设定"><span class="nav-number">7.4.</span> <span class="nav-text">Advertising周期的设定</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scanning（扫描态）通信"><span class="nav-number">8.</span> <span class="nav-text">Scanning（扫描态）通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#scanWindow和scanInterval"><span class="nav-number">8.1.</span> <span class="nav-text">scanWindow和scanInterval</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Passive-Scanning和Active-Scanning"><span class="nav-number">8.2.</span> <span class="nav-text">Passive Scanning和Active Scanning</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Initialing（发起态）通信"><span class="nav-number">9.</span> <span class="nav-text">Initialing（发起态）通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#广播通信模式PDU总结"><span class="nav-number">10.</span> <span class="nav-text">广播通信模式PDU总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#data-channel对应的PDU"><span class="nav-number">11.</span> <span class="nav-text">data channel对应的PDU</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LL-Data-PDU"><span class="nav-number">11.1.</span> <span class="nav-text">LL Data PDU</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LL-Control-PDU"><span class="nav-number">11.2.</span> <span class="nav-text">LL Control PDU</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接的建立"><span class="nav-number">12.</span> <span class="nav-text">连接的建立</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接建立后的通信过程"><span class="nav-number">13.</span> <span class="nav-text">连接建立后的通信过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接的控制与管理"><span class="nav-number">14.</span> <span class="nav-text">连接的控制与管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连接超时及断开"><span class="nav-number">15.</span> <span class="nav-text">连接超时及断开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跳频（Hopping）策略"><span class="nav-number">16.</span> <span class="nav-text">跳频（Hopping）策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应答-Acknowledgement-和流控-Flow-Control"><span class="nav-number">17.</span> <span class="nav-text">应答(Acknowledgement)和流控(Flow Control)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从协议栈Controler端到Host端"><span class="nav-number">18.</span> <span class="nav-text">从协议栈Controler端到Host端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#广播通信包的应用层数据解析"><span class="nav-number">19.</span> <span class="nav-text">广播通信包的应用层数据解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#16bit-UUID"><span class="nav-number">20.</span> <span class="nav-text">16bit UUID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GATT"><span class="nav-number">21.</span> <span class="nav-text">GATT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDP-服务发现协议"><span class="nav-number">22.</span> <span class="nav-text">SDP(服务发现协议)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SDP场景：ERROR-HANDLING"><span class="nav-number">22.1.</span> <span class="nav-text">SDP场景：ERROR HANDLING</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SDP场景：SERVICESEARCH-TRANSACTION"><span class="nav-number">22.2.</span> <span class="nav-text">SDP场景：SERVICESEARCH TRANSACTION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SDP场景：SERVICEATTRIBUTE-TRANSACTION"><span class="nav-number">22.3.</span> <span class="nav-text">SDP场景：SERVICEATTRIBUTE TRANSACTION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SDP场景：SERVICESEARCHATTRIBUTE-TRANSACTION"><span class="nav-number">22.4.</span> <span class="nav-text">SDP场景：SERVICESEARCHATTRIBUTE  TRANSACTION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SDP场景通信示例"><span class="nav-number">22.5.</span> <span class="nav-text">SDP场景通信示例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#L2CAP"><span class="nav-number">23.</span> <span class="nav-text">L2CAP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#L2CAP包格式"><span class="nav-number">24.</span> <span class="nav-text">L2CAP包格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#后记"><span class="nav-number">25.</span> <span class="nav-text">后记</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">photosyn</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动</div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+
+
+
+  
+
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('2');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <script src="/js/src/js.cookie.js?v=6.7.0"></script>
+  <script src="/js/src/scroll-cookie.js?v=6.7.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"scale":1,"hHeadPos":0.5,"vHeadPos":0.618,"jsonPath":"/live2dw/assets/wanko.model.json"},"display":{"position":"right","width":80,"height":160,"hOffset":0,"vOffset":-20},"mobile":{"show":false},"log":false});</script></body>
+</html>
